@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+
 namespace Sudoku_Solver
 {
     class Program
@@ -18,6 +19,7 @@ namespace Sudoku_Solver
                     board[i, j] = int.Parse(input[j].ToString());
                 }
             }
+
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
@@ -30,12 +32,12 @@ namespace Sudoku_Solver
                     }
                 }
             }
-            Solve(0,0);
+
+            Solve(0, 0);
         }
 
         public static bool IsPossible(int row, int col, int index)
         {
-            int currentNumber = board[row, col];
             for (int i = 0; i < 9; i++)
             {
                 //row
@@ -49,6 +51,7 @@ namespace Sudoku_Solver
                     return false;
                 }
             }
+
             //Current Square
             int row1 = row / 3 * 3;
             int col1 = col / 3 * 3;
@@ -62,6 +65,7 @@ namespace Sudoku_Solver
                     }
                 }
             }
+
             return true;
         }
 
@@ -71,51 +75,48 @@ namespace Sudoku_Solver
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    Console.Write(board[i,j]+" ");
+                    Console.Write(board[i, j] + " ");
                 }
                 Console.WriteLine();
             }
         }
+
         public static void Solve(int row, int col)
         {
-           
             if (col == 9)
             {
                 Solve(row + 1, 0);
+                return;
             }
+
             if (row == 9)
             {
                 PrintBoard();
-                Console.WriteLine(); 
+                Console.WriteLine();
                 return;
             }
-            if (col < 9 && row < 9)
+
+            if (board[row, col] == 0)
             {
-                if (board[row, col] == 0)
+                for (int i = 0; i < possibilites[new Tuple<int, int>(row, col)].Count(); i++)
                 {
-                    for (int i = 0; i < possibilites[new Tuple<int, int>(row, col)].Count(); i++)
+                    if (IsPossible(row, col, i))
                     {
-                        if (IsPossible(row, col, i))
-                        {
-                            board[row, col] = possibilites[new Tuple<int, int>(row, col)][i];
-                            Solve(row, col + 1);
-                            board[row, col] = 0;
-                        }
-                        else if (!IsPossible(row, col, i) && i == possibilites[new Tuple<int, int>(row, col)].Count() - 1)
-                        {
-                            return;
-                        }
+                        board[row, col] = possibilites[new Tuple<int, int>(row, col)][i];
+                        Solve(row, col + 1);
+                        board[row, col] = 0;
                     }
                 }
-                else
-                {
-                    Solve(row, col + 1);
-                }
+                return;
+            }
+            else
+            {
+                Solve(row, col + 1);
             }
         }
+
         public static void FindPossibilites(int row, int col, List<int> numbers)
         {
-            int currentNumber = board[row, col];
             for (int i = 0; i < 9; i++)
             {
                 //row
@@ -129,6 +130,7 @@ namespace Sudoku_Solver
                     numbers.Remove(board[i, col]);
                 }
             }
+
             //Current Square
             int row1 = row / 3 * 3;
             int col1 = col / 3 * 3;
@@ -142,6 +144,7 @@ namespace Sudoku_Solver
                     }
                 }
             }
+
             possibilites[new Tuple<int, int>(row, col)] = numbers.ToList();
         }
     }
